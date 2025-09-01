@@ -10,3 +10,7 @@ from dotenv import load_dotenv
 # Load environment vars from .env
 load_dotenv
 
+app = FastAPI(title='Hacker News Scraper API')
+
+#store page numbers in cache
+cache: Dict[int, List[Dict[str, Any]]] = {}
