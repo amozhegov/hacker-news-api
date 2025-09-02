@@ -86,7 +86,7 @@ async def get_pages(n: int) -> List[Dict[str, Any]]:
         new_results = await asyncio.gather(*tasks)
         for idx, res in enumerate(new_results, start=1):
             # determine page number for cache
-            page_index = list(set(range(1, n+1)) - set(cache_keys()))[idx-1]
+            page_index = list(set(range(1, n+1)) - set(cache.keys()))[idx-1]
             cache[page_index] = res
             # Add new results
             results.extend(res)
