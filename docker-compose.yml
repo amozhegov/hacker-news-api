@@ -1,0 +1,12 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: hacker-news-api
+    ports:
+      - "3000:3000"
+    env_file:
+      - app/.env
+    restart: unless-stopped
+
