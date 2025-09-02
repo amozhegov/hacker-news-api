@@ -28,13 +28,13 @@ async def fetch_page(page: int) -> List[Dict[str, Any]]:
             raise HTTPException(status_code = 500, detail='Hacker News does not respond')
     
     # Parse HTML
-    soup = BeautifulSoup(response.text, html.parser)
+    soup = BeautifulSoup(response.text, 'html.parser')
 
     stories = []
     # select all news on the page
     items = soup.select('.athing')
     for item in items:
-        title.tag = item.select_one('.titleline a')
+        title_tag = item.select_one('.titleline a')
         subtext = item.find_next_sibling('tr').select_one('.subtext')
         if not title_tag or not subtext:
             # skip if no title
@@ -43,12 +43,12 @@ async def fetch_page(page: int) -> List[Dict[str, Any]]:
         if points_tag:
             points_text = points_tag.get_text(strip = True).replace(' points', '').strip()
             # to number
-            points = int(points_txt) if points_text.isdigit() else 0
+            points = int(points_text) if points_text.isdigit() else 0
         else:
             points = 0
 
         story = {
-            'title':title_tag.text;
+            'title': title_tag.text,
             'url': title_tag['href'],
             'points': points,
             # extract news author
@@ -57,7 +57,7 @@ async def fetch_page(page: int) -> List[Dict[str, Any]]:
             'published': subtext.select('span')[-1].get_text(strip=True) if subtext.select('span') else None,
         }
 
-        comments_text = subtext.findall('a')[-1].text
+        comments_text = subtext.find_all('a')[-1].text
         if 'comment' in comments_text:
             comments_clean = comments_text.replace('comments', '').replace('comment', '').replace('\xa0', '').strip()
             # number of comments
@@ -102,9 +102,9 @@ async def get_number(number: int):
     # Process {number} amount of pages
     return await get_pages(number)
 
-from openai import AsyncOpenAi
+from openai import AsyncOpenAI
 # create an OpenAI client
-client = AsyncOpenAi(api_key=os.getenv('OPENAI_API_KEY'))
+client = AsyncOpenAI(api_key=os.getenv('OPENAI_API_KEY'))
 
 app.get('/ai/classify/{pages}')
 async def classify(pages: int):
